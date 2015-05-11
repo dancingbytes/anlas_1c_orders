@@ -30,7 +30,7 @@ class Anlas1cOrderController < ApplicationController
           begin
 
             send_file(File.read(file_name),
-              :type         => "text/xml",
+              :type         => "application/zip",
               :disposition  => "inline"
             )
 

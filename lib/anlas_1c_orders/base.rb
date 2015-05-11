@@ -37,11 +37,33 @@ module Anlas1cOrders
 
       files = []
       orders.each { |order|
-        files << ::Anlas1cOrders.create(order)
+        files << ::Anlas1cOrders::Xml.create(order)
       }
-      files
+      zip_files(files)
 
     end # to_file
+
+    private
+
+    def zip_files(files, file_name = nil)
+
+      file_name ||= ::File.join("/tmp", "#{::Time.now.to_i}-#{rand}.zip")
+
+      begin
+
+        zip = ::Zip::File.open(file_name, ::Zip::File::CREATE)
+        files.each { |fl|
+          zip.add(::File.basename(fl), fl)
+        }
+        zip.close
+
+      rescue => ex
+        puts "#{ex.inspect}"
+      end
+
+      file_name
+
+    end # zip_file
 
   end # Base
 

@@ -34,6 +34,6 @@ module Anlas1cOrders
 end # Anlas1cOrders
 
 if defined?(::Rails)
-  require 'anlas_import/engine'
-  require 'anlas_import/railtie'
+  require 'anlas_1c_orders/engine'
+  require 'anlas_1c_orders/railtie'
 end

@@ -5,25 +5,6 @@ module Anlas1cOrders
 
     class << self
 
-      def zip_files(name_file)
-
-        zipfile_name  = name_file + ".zip"
-        base_name     = ::File.basename(name_file)
-
-        begin
-
-          zip = ::Zip::File.open(zipfile_name, ::Zip::File::CREATE)
-          zip.add(base_name, name_file)
-          zip.close
-
-        rescue => ex
-          puts "#{ex.inspect}"
-        end
-
-        zipfile_name
-
-      end # zip_file
-
       def create(order)
         new(order).create
       end # create
@@ -36,7 +17,7 @@ module Anlas1cOrders
 
     def create
 
-      file_name = ::File.join(::Rails.root, tmp, "#{@order.uri}.xml")
+      file_name = ::File.join(::Rails.root, "tmp", "#{@order.uri}.xml")
       create_xml(file_name, @order.cart_items)
       file_name
 
@@ -52,7 +33,10 @@ module Anlas1cOrders
 
       builder = ::Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
 
-        xml.send(:"КоммерческаяИнформация") {
+        xml.send(:"КоммерческаяИнформация", {
+          "ВерсияСхемы"       => "2.03",
+          "ДатаФормирования"  => date
+        }) {
 
           xml.send(:"Документ") {
 
@@ -116,8 +100,8 @@ module Anlas1cOrders
                   xml.send(:"Сумма",          item.total_price)
 
                   xml.send(:"БазоваяЕдиница", "шт", {
-                    "Код" => "796",
-                    "НаименованиеПолное" => "Штука",
+                    "Код"                     => "796",
+                    "НаименованиеПолное"      => "Штука",
                     "МеждународноеСокращение" => "PCE"
                   })
 
