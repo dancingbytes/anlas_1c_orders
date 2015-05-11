@@ -1,5 +1,5 @@
 # encoding: utf-8
-class Anlas1cOrderController < ApplicationController
+class AnlasExchangeOrdersController < ApplicationController
 
   unloadable
 
@@ -27,19 +27,13 @@ class Anlas1cOrderController < ApplicationController
 
         if file_name && ::File.exist?(file_name)
 
-          begin
-
-            send_file(File.read(file_name),
-              :type         => "application/zip",
-              :disposition  => "inline"
-            )
-
-          ensure
-            ::FileUtils.rm(file_name, force: true)
-          end
+          send_file(file_name,
+            :type         => "application/zip",
+            :disposition  => "inline"
+          )
 
         else
-          render(:text => "failure\nNot found", :layout => false) and return
+          render(:text => "failure\nNo datas to exchange", :layout => false) and return
         end
 
       else
@@ -70,4 +64,4 @@ class Anlas1cOrderController < ApplicationController
 
   end # auth
 
-end # Anlas1cOrderController
+end # AnlasExchangeOrdersController

@@ -6,7 +6,7 @@ module Anlas1cOrders
     class << self
 
       def auth?(name, login, pass)
-        new(name).auth?
+        new(name).auth?(login, pass)
       end # auth?
 
     end # class << self
@@ -39,7 +39,15 @@ module Anlas1cOrders
       orders.each { |order|
         files << ::Anlas1cOrders::Xml.create(order)
       }
-      zip_files(files)
+
+      # Архивируем
+      file_name = zip_files(files)
+
+      # Помечаем заказы обаботанными
+      orders.with(safe: true).update_all({ exchanged: true })
+
+      # Возвращаем название файла
+      file_name
 
     end # to_file
 
@@ -51,14 +59,21 @@ module Anlas1cOrders
 
       begin
 
-        zip = ::Zip::File.open(file_name, ::Zip::File::CREATE)
-        files.each { |fl|
-          zip.add(::File.basename(fl), fl)
+        ::Zip::File.open(file_name, ::Zip::File::CREATE) { |zip|
+
+          files.each { |fl|
+            zip.add(::File.basename(fl), fl)
+          }
+
         }
-        zip.close
+
+        # Удаляем файлы
+        files.each { |fl|
+          ::FileUtils.rm(fl, force: true)
+        }
 
       rescue => ex
-        puts "#{ex.inspect}"
+        puts "[Anlas1cOrders::Base.zip_file] #{ex.inspect}"
       end
 
       file_name

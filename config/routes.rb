@@ -1,7 +1,7 @@
 # encoding: utf-8
 Anlas1cOrders::Engine.routes.draw do
 
-  get  'anlas_1c_orders/:exchange_url'  => 'anlas_1c_orders#index'
-  get  'anlas_1c_orders'                => 'anlas_1c_orders#error'
+  get  'anlas_exchange_orders/:exchange_url'  => 'anlas_exchange_orders#index'
+  get  'anlas_exchange_orders'                => 'anlas_exchange_orders#error'
 
 end # draw
