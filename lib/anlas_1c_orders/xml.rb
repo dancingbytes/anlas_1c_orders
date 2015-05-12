@@ -17,7 +17,7 @@ module Anlas1cOrders
 
     def create
 
-      file_name = ::File.join(::Rails.root, "tmp", "#{::Time.now.to_i}-#{rand}.xml")
+      file_name = ::File.join("/tmp", "#{::Time.now.to_i}-#{rand}.xml")
       create_xml(file_name)
       file_name
 
@@ -96,6 +96,7 @@ module Anlas1cOrders
 
                     xml.send(:"Ид",             item.id.to_s)
                     xml.send(:"ИдКаталога",     "")
+                    xml.send(:"Артикул",        item.marking_of_goods)
                     xml.send(:"Наименование",   xml_escape(item.name))
                     xml.send(:"ЦенаЗаЕдиницу",  item.price)
                     xml.send(:"Количество",     item.count)

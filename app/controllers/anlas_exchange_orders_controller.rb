@@ -12,7 +12,7 @@ class AnlasExchangeOrdersController < ApplicationController
     case params[:mode]
 
       when 'init'
-        render(:text => "zip=yes\nfile_limit=9999999999999999999", :layout => false) and return
+        render(:text => "zip=no\nfile_limit=9999999999999999999", :layout => false) and return
 
       when 'checkauth'
         render(:text => "success\nanlas_1c_orders\n#{rand(9999999999)}", :layout => false) and return
@@ -28,7 +28,7 @@ class AnlasExchangeOrdersController < ApplicationController
         if file_name && ::File.exist?(file_name)
 
           send_file(file_name,
-            :type         => "application/zip",
+            :type         => "text/xml", # "application/zip",
             :disposition  => "inline"
           )
 

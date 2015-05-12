@@ -36,7 +36,7 @@ module Anlas1cOrders
       return unless orders.exists?
 
       # Архивируем
-      file_name = zip_files(::Anlas1cOrders::Xml.create(orders))
+      file_name = ::Anlas1cOrders::Xml.create(orders) # zip_files()
 
       # Помечаем заказы обаботанными
       orders.with(safe: true).update_all({ exchanged: true })
