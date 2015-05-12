@@ -31,7 +31,7 @@ module Anlas1cOrders
       date    = ::Time.now.strftime("%Y-%m-%d")
       time    = ::Time.now.strftime("%H:%M:%S")
 
-      builder = ::Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
+      builder = ::Nokogiri::XML::Builder.new(:encoding => 'windows-1251') do |xml|
 
         xml.send(:"КоммерческаяИнформация", {
           "ВерсияСхемы"       => "2.03",
