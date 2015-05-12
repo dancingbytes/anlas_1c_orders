@@ -35,13 +35,8 @@ module Anlas1cOrders
       orders = ::Order.where(exchanged: false, delivery_type_id: @name)
       return unless orders.exists?
 
-      files = []
-      orders.each { |order|
-        files << ::Anlas1cOrders::Xml.create(order)
-      }
-
       # Архивируем
-      file_name = zip_files(files)
+      file_name = zip_files(::Anlas1cOrders::Xml.create(orders))
 
       # Помечаем заказы обаботанными
       orders.with(safe: true).update_all({ exchanged: true })
@@ -53,30 +48,24 @@ module Anlas1cOrders
 
     private
 
-    def zip_files(files, file_name = nil)
+    def zip_files(file_name, target_file_name = nil)
 
-      file_name ||= ::File.join("/tmp", "#{::Time.now.to_i}-#{rand}.zip")
+      target_file_name ||= ::File.join("/tmp", "#{::Time.now.to_i}-#{rand}.zip")
 
       begin
 
-        ::Zip::File.open(file_name, ::Zip::File::CREATE) { |zip|
-
-          files.each { |fl|
-            zip.add(::File.basename(fl), fl)
-          }
-
+        ::Zip::File.open(target_file_name, ::Zip::File::CREATE) { |zip|
+          zip.add(::File.basename(file_name), file_name)
         }
 
         # Удаляем файлы
-        files.each { |fl|
-          ::FileUtils.rm(fl, force: true)
-        }
+        ::FileUtils.rm(file_name, force: true)
 
       rescue => ex
         puts "[Anlas1cOrders::Base.zip_file] #{ex.inspect}"
       end
 
-      file_name
+      target_file_name
 
     end # zip_file
 
