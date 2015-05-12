@@ -39,7 +39,8 @@ module Anlas1cOrders
       file_name = ::Anlas1cOrders::Xml.create(orders) # zip_files()
 
       # Помечаем заказы обаботанными
-      orders.with(safe: true).update_all({ exchanged: true })
+# TODO: временно
+#      orders.with(safe: true).update_all({ exchanged: true })
 
       # Возвращаем название файла
       file_name
