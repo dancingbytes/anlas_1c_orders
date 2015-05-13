@@ -45,7 +45,7 @@ module Anlas1cOrders
 
       return unless exist?
 
-      orders = Order.desc(:created_at).limit(10) # ::Order.where(state_code: 1, delivery_type_id: @name)
+      orders = Order.where(:id.in => ["554c457eaf18c24500000137", "554db32baf18c2aff800019e"]) # ::Order.where(state_code: 1, delivery_type_id: @name)
       return unless orders.exists?
 
       # Архивируем

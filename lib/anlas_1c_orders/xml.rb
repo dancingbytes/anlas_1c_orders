@@ -30,26 +30,29 @@ module Anlas1cOrders
 
     def create_xml(file_name)
 
-      number  = ::Time.now.to_i.to_s
-      date    = ::Time.now.strftime("%Y-%m-%d")
-      time    = ::Time.now.strftime("%H:%M:%S")
-
       builder = ::Nokogiri::XML::Builder.new(:encoding => @encoding) do |xml|
 
         xml.send(:"КоммерческаяИнформация", {
           "ВерсияСхемы"       => "2.03",
-          "ДатаФормирования"  => date
+          "ДатаФормирования"  => ::Time.now.strftime("%Y-%m-%dТ%H:%M:%S"),
+          "ФорматДаты"        => "ДФ=yyyy-MM-dd; ДЛФ=DT",
+          "ФорматВремени"     => "ДФ=ЧЧ:мм:сс; ДЛФ=T",
+          "РазделительДатаВремя" => "T",
+          "ФорматСуммы"       => "ЧЦ=18; ЧДЦ=2; ЧРД=.",
+          "ФорматКоличества"  => "ЧЦ=18; ЧДЦ=2; ЧРД=."
         }) {
 
           @orders.each { |order|
+
+            user = order.user || ::User.new
 
             xml.send(:"Документ") {
 
               xml.send(:"Ид",           order.uri)
               xml.send(:"Номер",        order.uri)
-              xml.send(:"Дата",         date)
-              xml.send(:"Время",        time)
-              xml.send(:"Комментарий",  nil)
+              xml.send(:"Дата",         ::Time.now.strftime("%Y-%m-%d"))
+              xml.send(:"Время",        ::Time.now.strftime("%H:%M:%S"))
+              xml.send(:"Комментарий")
 
               xml.send(:"ХозОперация",  "Заказ товара")
               xml.send(:"Роль",         "Продавец")
@@ -61,31 +64,14 @@ module Anlas1cOrders
 
                 xml.send(:"Контрагент") {
 
-                  xml.send(:"Ид",                 "admin")
-                  xml.send(:"Наименование",       "admin")
-                  xml.send(:"Роль",               "Покупатель")
-                  xml.send(:"ПолноеНаименование", xml_escape(order.fio))
-                  xml.send(:"Фамилия",            xml_escape(order.last_name || ""))
-                  xml.send(:"Имя",                xml_escape(order.first_name || ""))
-                  xml.send(:"Контакты",           order.phone_number || "")
+                  xml.send(:"Ид",       to32(user.id))
+                  xml.send(:"Роль",     "Покупатель")
 
-                  xml.send(:"АдресРегистрации")
-
-                  xml.send(:"Представители") {
-
-                    xml.send(:"Представитель") {
-
-                      xml.send(:"Контрагент") {
-
-                        xml.send(:"Отношение",    "Контактное лицо")
-                        xml.send(:"ИД",           "b342955a9185c40132d4c1df6b30af2f")
-                        xml.send(:"Наименование", "admin")
-
-                      }
-
-                    }
-
-                  }
+                  if order.legal_entity?
+                    legal_entity(xml, order)
+                  else
+                    physical_person(xml, order)
+                  end
 
                 } # Контрагент
 
@@ -97,7 +83,7 @@ module Anlas1cOrders
 
                   xml.send(:"Товар") {
 
-                    xml.send(:"Ид",             item.id.to_s)
+                    xml.send(:"Ид",             to32(item.id))
                     xml.send(:"ИдКаталога",     "")
                     xml.send(:"Артикул",        item.marking_of_goods)
                     xml.send(:"Наименование",   xml_escape(item.name))
@@ -203,6 +189,105 @@ module Anlas1cOrders
 
     end # create_xml
 
+    def physical_person(xml, order)
+
+      user = order.user || ::User.new
+
+      xml.send(:"Наименование",       xml_escape(order.fio))
+      xml.send(:"ПолноеНаименование", xml_escape(order.fio))
+      xml.send(:"Фамилия",            xml_escape(order.last_name || ""))
+      xml.send(:"Имя",                xml_escape(order.first_name || ""))
+
+      xml.send(:"Контакты") {
+
+        xml.send(:"Контакт") {
+
+          xml.send(:"Тип",        "Почта")
+          xml.send(:"Значение",   order.email)
+
+        }
+
+        xml.send(:"Контакт") {
+
+          xml.send(:"Тип",        "ТелефонРабочий")
+          xml.send(:"Значение",   order.phone_number)
+
+        }
+
+      }
+
+      xml.send(:"Представители") {
+
+        xml.send(:"Представитель") {
+
+          xml.send(:"Контрагент") {
+
+            xml.send(:"Отношение",    "Контактное лицо")
+            xml.send(:"ИД",           to32(user.id))
+            xml.send(:"Наименование", xml_escape(order.fio))
+
+          }
+
+        }
+
+      }
+
+    end # physical_person
+
+    def legal_entity(xml, order)
+
+      user = order.user || ::User.new
+
+      xml.send(:"Наименование",             xml_escape(order.organization))
+      xml.send(:"ОфициальноеНаименование",  xml_escape(order.organization))
+
+      xml.send(:"ЮридическийАдрес") {
+        xml.send(:"Представление",  xml_escape(order.juridical_address))
+      }
+
+      xml.send(:"ИНН",  order.inn)
+      xml.send(:"КПП",  order.kpp)
+
+      xml.send(:"Адрес") {
+        xml.send(:"Представление",  xml_escape(order.juridical_address))
+      }
+
+      xml.send(:"Контакты") {
+
+        xml.send(:"Контакт") {
+
+          xml.send(:"Тип",        "Почта")
+          xml.send(:"Значение",   order.email)
+
+        }
+
+        xml.send(:"Контакт") {
+
+          xml.send(:"Тип",        "ТелефонРабочий")
+          xml.send(:"Значение",   order.phone_number)
+
+        }
+
+      }
+
+      xml.send(:"Представители") {
+
+        xml.send(:"Представитель") {
+
+          xml.send(:"Контрагент") {
+
+            xml.send(:"Отношение",    "Контактное лицо")
+            xml.send(:"ИД",           to32(user.id))
+            xml.send(:"Наименование", xml_escape(order.fio))
+
+          }
+
+        }
+
+      }
+
+    end # legal_entity
+
     def xml_escape(str)
 
       str.gsub!(/&/, "&amp;")
@@ -213,6 +298,10 @@ module Anlas1cOrders
       str
 
     end # xml_escape
+
+    def to32(str)
+      str.to_s.ljust(32, '0')
+    end # to32
 
   end # Xml
 
