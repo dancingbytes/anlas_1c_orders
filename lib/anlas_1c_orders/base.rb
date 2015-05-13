@@ -33,7 +33,7 @@ module Anlas1cOrders
       return unless exist?
 
       orders = ::Order.where(exchanged: false, delivery_type_id: @name)
-      return unless orders.exists?
+      return if orders.count == 0
 
       # Архивируем
       file_name = ::Anlas1cOrders::Xml.create(orders) # zip_files()
