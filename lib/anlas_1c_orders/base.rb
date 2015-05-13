@@ -45,7 +45,8 @@ module Anlas1cOrders
 
       return unless exist?
 
-      orders = Order.where(:id.in => ["554c457eaf18c24500000137", "554db32baf18c2aff800019e"]) # ::Order.where(state_code: 1, delivery_type_id: @name)
+      # orders = ::Order.where(state_code: 1, accepted: false, delivery_type_id: @name)
+      orders = Order.where(:id.in => ["554c457eaf18c24500000137", "554db32baf18c2aff800019e"])
       return unless orders.exists?
 
       # Архивируем
@@ -53,7 +54,7 @@ module Anlas1cOrders
       file_name = zip_files(file_name) if @zip
 
       # Помечаем заказы обаботанными
-# TODO: временно
+## TODO: временно
 #      orders.with(safe: true).update_all({ state_code: 203 })
 
       # Возвращаем название файла

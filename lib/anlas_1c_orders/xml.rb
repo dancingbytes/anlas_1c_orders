@@ -64,7 +64,7 @@ module Anlas1cOrders
 
                 xml.send(:"Контрагент") {
 
-                  xml.send(:"Ид",       to32(user.id))
+                  xml.send(:"Ид",       to_1c_id(user.id))
                   xml.send(:"Роль",     "Покупатель")
 
                   if order.legal_entity?
@@ -83,7 +83,7 @@ module Anlas1cOrders
 
                   xml.send(:"Товар") {
 
-                    xml.send(:"Ид",             to32(item.id))
+                    xml.send(:"Ид",             to_1c_id(item.id))
                     xml.send(:"ИдКаталога",     "")
                     xml.send(:"Артикул",        item.marking_of_goods)
                     xml.send(:"Наименование",   xml_escape(item.name))
@@ -223,7 +223,7 @@ module Anlas1cOrders
           xml.send(:"Контрагент") {
 
             xml.send(:"Отношение",    "Контактное лицо")
-            xml.send(:"ИД",           to32(user.id))
+            xml.send(:"ИД",           to_1c_id(user.id))
             xml.send(:"Наименование", xml_escape(order.fio))
 
           }
@@ -277,7 +277,7 @@ module Anlas1cOrders
           xml.send(:"Контрагент") {
 
             xml.send(:"Отношение",    "Контактное лицо")
-            xml.send(:"ИД",           to32(user.id))
+            xml.send(:"ИД",           to_1c_id(user.id))
             xml.send(:"Наименование", xml_escape(order.fio))
 
           }
@@ -299,9 +299,12 @@ module Anlas1cOrders
 
     end # xml_escape
 
-    def to32(str)
-      str.to_s.ljust(32, '0')
-    end # to32
+    def to_1c_id(str)
+
+      uid = str.to_s.ljust(32, '0')
+      "#{uid[0,8]}-#{uid[7,4]}-#{uid[12,4]}-#{uid[16,4]}-#{uid[20,12]}"
+
+    end # to_1c_id
 
   end # Xml
 
