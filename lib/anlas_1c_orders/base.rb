@@ -32,7 +32,7 @@ module Anlas1cOrders
 
       return unless exist?
 
-      orders = ::Order.where(exchanged: false, delivery_type_id: @name)
+      orders = ::Order.desc(:created_at).limit(10) # ::Order.where(exchanged: false, delivery_type_id: @name)
       return unless orders.exists?
 
       # Архивируем
