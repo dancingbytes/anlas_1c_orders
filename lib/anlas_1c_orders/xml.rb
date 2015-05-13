@@ -5,14 +5,17 @@ module Anlas1cOrders
 
     class << self
 
-      def create(orders)
-        new(orders).create
+      def create(orders, encoding)
+        new(orders, encoding).create
       end # create
 
     end # class << self
 
-    def initialize(orders)
-      @orders = orders
+    def initialize(orders, encoding = 'UTF-8')
+
+      @orders   = orders
+      @encoding = encoding
+
     end # new
 
     def create
@@ -31,7 +34,7 @@ module Anlas1cOrders
       date    = ::Time.now.strftime("%Y-%m-%d")
       time    = ::Time.now.strftime("%H:%M:%S")
 
-      builder = ::Nokogiri::XML::Builder.new(:encoding => 'windows-1251') do |xml|
+      builder = ::Nokogiri::XML::Builder.new(:encoding => @encoding) do |xml|
 
         xml.send(:"КоммерческаяИнформация", {
           "ВерсияСхемы"       => "2.03",

@@ -28,7 +28,7 @@ class AnlasExchangeOrdersController < ApplicationController
         if file_name && ::File.exist?(file_name)
 
           send_file(file_name,
-            :type         => "text/xml", # "application/zip",
+            :type         => req.type,
             :disposition  => "inline"
           )
 

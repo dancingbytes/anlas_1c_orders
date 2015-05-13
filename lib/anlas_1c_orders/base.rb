@@ -17,6 +17,7 @@ module Anlas1cOrders
       @el     = ::Anlas1cOrders.params[name] || {}
       @login  = @el[:login]
       @pass   = @el[:pass]
+      @zip    = @el[:zip] == true
 
     end # new
 
@@ -28,19 +29,32 @@ module Anlas1cOrders
       @login.nil? || (@login == login && @pass == pass)
     end # auth?
 
+    def mime_type
+      @zip ? "application/zip" : "text/xml"
+    end # mime_type
+
+    def encoding
+      @el[:encoding] || 'UTF-8'
+    end # encoding
+
+    def type
+      @type ||= "#{self.mime_type}; charset=#{self.encoding}"
+    end # type
+
     def to_file
 
       return unless exist?
 
-      orders = ::Order.where(exchanged: false, delivery_type_id: @name)
-      return if orders.count == 0
+      orders = Order.desc(:created_at).limit(10) # ::Order.where(state_code: 1, delivery_type_id: @name)
+      return unless orders.exists?
 
       # Архивируем
-      file_name = ::Anlas1cOrders::Xml.create(orders) # zip_files()
+      file_name = ::Anlas1cOrders::Xml.create(orders, self.encoding)
+      file_name = zip_files(file_name) if @zip
 
       # Помечаем заказы обаботанными
 # TODO: временно
-#      orders.with(safe: true).update_all({ exchanged: true })
+#      orders.with(safe: true).update_all({ state_code: 203 })
 
       # Возвращаем название файла
       file_name

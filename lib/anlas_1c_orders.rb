@@ -12,10 +12,15 @@ module Anlas1cOrders
 
   extend self
 
-  def exchange(name, login: nil, pass: nil)
+  def exchange(name, login: nil, pass: nil, zip: false, encoding: 'UTF-8')
 
     @params       ||= {}
-    @params[name] = { login: login, pass: pass }
+    @params[name] = {
+      login:    login,
+      pass:     pass,
+      zip:      zip,
+      encoding: encoding
+    }
     self
 
   end # exchange
