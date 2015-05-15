@@ -33,7 +33,7 @@ module Anlas1cOrders
       builder = ::Nokogiri::XML::Builder.new(:encoding => @encoding) do |xml|
 
         xml.send(:"КоммерческаяИнформация", {
-          "ВерсияСхемы"       => "2.03",
+          "ВерсияСхемы"       => "2.05",
           "ДатаФормирования"  => ::Time.now.strftime("%Y-%m-%dТ%H:%M:%S"),
           "ФорматДаты"        => "ДФ=yyyy-MM-dd; ДЛФ=DT",
           "ФорматВремени"     => "ДФ=ЧЧ:мм:сс; ДЛФ=T",

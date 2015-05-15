@@ -48,9 +48,8 @@ module Anlas1cOrders
 
       # Выбираем заказы на обработку
       orders = ::Order.where(state_code: 1, accepted: false, delivery_type_id: @name)
-      return unless orders.exists?
 
-      # ФОрмируем файл выгрузки
+      # Формируем файл выгрузки
       file_name = ::Anlas1cOrders::Xml.create(orders, self.encoding)
 
       # Архивируем -- если задано
