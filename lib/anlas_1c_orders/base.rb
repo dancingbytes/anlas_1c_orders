@@ -43,19 +43,21 @@ module Anlas1cOrders
 
     def to_file
 
+      # Если указанная выгрузка не найдена -- завершаем работу
       return unless exist?
 
-      # orders = ::Order.where(state_code: 1, accepted: false, delivery_type_id: @name)
-      orders = Order.where(:id.in => ["554c457eaf18c24500000137", "554db32baf18c2aff800019e"])
+      # Выбираем заказы на обработку
+      orders = ::Order.where(state_code: 1, accepted: false, delivery_type_id: @name)
       return unless orders.exists?
 
-      # Архивируем
+      # ФОрмируем файл выгрузки
       file_name = ::Anlas1cOrders::Xml.create(orders, self.encoding)
+
+      # Архивируем -- если задано
       file_name = zip_files(file_name) if @zip
 
       # Помечаем заказы обаботанными
-## TODO: временно
-#      orders.with(safe: true).update_all({ state_code: 203 })
+      orders.with(safe: true).update_all({ state_code: 203 })
 
       # Возвращаем название файла
       file_name
