@@ -20,6 +20,9 @@ class AnlasExchangeOrdersController < ApplicationController
       when 'success'
         render(:text => "success", :layout => false) and return
 
+      when 'file'
+        render(:text => "success", :layout => false) and return
+
       when 'query'
 
         req       = ::Anlas1cOrders::Base.new(params[:exchange_url])
