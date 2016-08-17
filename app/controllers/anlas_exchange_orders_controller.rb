@@ -6,7 +6,7 @@ class AnlasExchangeOrdersController < ApplicationController
   before_filter :auth
   skip_before_filter :verify_authenticity_token
 
-  # GET /anlas_1c_orders/:delivery_type
+  # GET /anlas_1c_orders/:exchange_url
   def index
 
     case params[:mode]

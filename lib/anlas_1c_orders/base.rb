@@ -58,6 +58,9 @@ module Anlas1cOrders
       # Помечаем заказы обаботанными
       orders.with(safe: true).update_all({ state_code: 203 })
 
+      # Обновляем данные по заказам в поиске
+      orders.all.map(&:update_sphinx)
+
       # Возвращаем название файла
       file_name
 
