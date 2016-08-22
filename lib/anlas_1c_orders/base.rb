@@ -56,7 +56,7 @@ module Anlas1cOrders
       file_name = zip_files(file_name) if @zip
 
       # Помечаем заказы обаботанными
-      orders.with(safe: true).update_all({ state_code: 203 })
+      orders.update_all({ state_code: 203 })
 
       # Обновляем данные по заказам в поиске
       orders.all.map(&:update_sphinx)
