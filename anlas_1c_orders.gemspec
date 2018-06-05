@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Export orders from site to 1c.}
   spec.description   = %q{Export orders from site to 1c.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = "https://github.com/dancingbytes/anlas_1c_orders"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
 
   spec.add_dependency 'railties'
-  spec.add_dependency 'nokogiri', '~> 1.8.0'
+  spec.add_dependency 'nokogiri', '~> 1.8'
   spec.add_dependency 'rubyzip',  '~> 1.1'
 
 end
