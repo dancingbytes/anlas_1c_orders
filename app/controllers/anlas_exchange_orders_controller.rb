@@ -9,6 +9,8 @@ class AnlasExchangeOrdersController < ApplicationController
   # GET /anlas_1c_orders/:exchange_url
   def index
 
+    puts "[AnlasExchangeOrders] #{params.inspect}"
+
     case params[:mode]
 
       when 'init'
@@ -25,10 +27,13 @@ class AnlasExchangeOrdersController < ApplicationController
 
       when 'query'
 
-        req       = ::Anlas1cOrders::Base.new(params[:exchange_url])
+        # временно отключим применение изменений
+        req       = ::Anlas1cOrders::Base.new(params[:exchange_url], false)
         file_name = req.to_file
 
         if file_name && ::File.exist?(file_name)
+
+          puts "Has datas"
 
           send_file(file_name,
             :type         => req.type,
@@ -36,6 +41,7 @@ class AnlasExchangeOrdersController < ApplicationController
           )
 
         else
+          puts "No datas to exchange"
           render(:text => "failure\nNo datas to exchange", :layout => false) and return
         end
 
@@ -43,6 +49,7 @@ class AnlasExchangeOrdersController < ApplicationController
         render(:text => "failure\nParameter is incorrect", :layout => false) and return
 
     end # case
+    puts
 
   end # index
 

@@ -11,13 +11,14 @@ module Anlas1cOrders
 
     end # class << self
 
-    def initialize(name)
+    def initialize(name, commit_changes = true)
 
       @name   = name
       @el     = ::Anlas1cOrders.params[name] || {}
       @login  = @el[:login]
       @pass   = @el[:pass]
       @zip    = @el[:zip] == true
+      @commit_changes = commit_changes == true
 
     end # new
 
@@ -55,11 +56,15 @@ module Anlas1cOrders
       # Архивируем -- если задано
       file_name = zip_files(file_name) if @zip
 
-      # Помечаем заказы обаботанными
-      orders.update_all({ state_code: 203 })
+      if @commit_changes
 
-      # Обновляем данные по заказам в поиске
-      orders.all.map(&:update_sphinx)
+        # Помечаем заказы обаботанными
+        orders.update_all({ state_code: 203 })
+
+        # Обновляем данные по заказам в поиске
+        orders.all.map(&:update_sphinx)
+
+      end
 
       # Возвращаем название файла
       file_name
