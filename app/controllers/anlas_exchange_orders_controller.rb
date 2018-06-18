@@ -28,7 +28,7 @@ class AnlasExchangeOrdersController < ApplicationController
       when 'query'
 
         # временно отключим применение изменений
-        req       = ::Anlas1cOrders::Base.new(params[:exchange_url], false)
+        req       = ::Anlas1cOrders::Base.new(params[:exchange_url], true)
         file_name = req.to_file
 
         if file_name && ::File.exist?(file_name)
